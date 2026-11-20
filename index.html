@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Withholding Tax Assistant</title>
+<style>
+:root{--navy:#20365f;--blue:#315b96;--bg:#f4f6fa;--line:#dce3ee}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#182235}.wrap{max-width:1100px;margin:auto;padding:24px}.hero{background:linear-gradient(120deg,#1f355d,#426ca6);color:white;padding:28px;border-radius:18px}.hero h1{margin:0 0 8px;font-size:27px}.hero p{margin:4px 0;color:#e5edfb}.members{font-size:13px;opacity:.92}.layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 5px 20px #172c4d0a}.panel h2{font-size:18px;margin:0 0 16px;color:var(--navy)}label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px;font:inherit;background:white}textarea{min-height:80px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:9px;background:var(--blue);color:white;padding:11px 15px;font-weight:700;cursor:pointer;margin-top:14px}.btn.alt{background:#e8eef7;color:var(--navy)}.result{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:16px;min-height:190px;white-space:pre-wrap;line-height:1.65}.status{font-weight:800;color:#174b88}.small{font-size:12px;color:#65738a}.full{grid-column:1/-1}.pill{display:inline-block;background:#e8effa;color:#254b7d;border-radius:30px;padding:4px 9px;font-size:12px}.links a{color:#23558e;display:block;margin:6px 0;overflow-wrap:anywhere}@media(max-width:760px){.layout{grid-template-columns:1fr}.wrap{padding:12px}.hero{padding:20px}.grid2{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<header class="hero"><span class="pill">AC317 · GroupXX</span><h1>AI Withholding Tax Assistant</h1><p>ผู้ช่วยวิเคราะห์ภาษีเงินได้หัก ณ ที่จ่าย</p><p class="members">2410211100135 ณัฐณิชา เลิศโชติทรัพย์ · 2410211100161 ปุณฑริกา สารีผล · 2410211100197 เสาวลักษณ์ ไกรทอง</p></header>
+<div class="layout">
+<section class="panel"><h2>กรอกข้อมูลรายการจ่าย</h2>
+<label>ประเภทธุรกรรม</label><select id="kind"><option value="">-- เลือกประเภท --</option><option value="rent">ค่าเช่าอสังหาริมทรัพย์</option><option value="service">ค่าบริการทั่วไป (เช่น ทำความสะอาด)</option><option value="contract">ค่าจ้างทำของ</option><option value="ad">ค่าโฆษณา</option><option value="transport">ค่าขนส่งสินค้า</option><option value="goods">ซื้อสินค้าพร้อมจัดส่งโดยผู้ขาย</option><option value="hotel">ค่าห้องพักโรงแรม</option><option value="restaurant">ค่าอาหารภัตตาคาร</option><option value="unknown">ค่าดำเนินการ/ไม่ทราบประเภท</option></select>
+<div class="grid2"><div><label>สถานะผู้รับเงิน</label><select id="recipient"><option value="">-- เลือก --</option><option value="company">บริษัท/นิติบุคคลไทย</option><option value="person">บุคคลธรรมดาไทย</option><option value="foreign">ผู้รับต่างประเทศ</option></select></div><div><label>ยอดก่อน VAT (บาท)</label><input id="amount" type="number" min="0" step=".01" placeholder="เช่น 20000"></div></div>
+<div class="grid2"><div><label>VAT (บาท)</label><input id="vat" type="number" min="0" step=".01" placeholder="ถ้าไม่มีใส่ 0"></div><div><label>วันที่จ่าย</label><input id="date" type="date"></div></div>
+<label>รายละเอียดงาน/สัญญา/เงื่อนไข</label><textarea id="detail" placeholder="เช่น ผู้รับเป็นบริษัททำความสะอาด ออกใบกำกับภาษี VAT 7%"></textarea>
+<label>ข้อมูลเพิ่มเติม</label><textarea id="extra" placeholder="เช่น ผู้ขายไม่ได้ประกอบธุรกิจขนส่งเป็นปกติ หรือผู้รับจัดหาวัสดุสำคัญเอง"></textarea>
+<button class="btn" onclick="analyze()">วิเคราะห์และคำนวณ</button><button class="btn alt" onclick="askAI()">ให้ AI ช่วยอธิบาย</button>
+<p class="small">ระบบคำนวณเบื้องต้นตามฐานความรู้ตัวอย่าง หากข้อมูลไม่ครบจะหยุดถาม ไม่ใช่คำปรึกษาภาษีที่ใช้แทนผู้เชี่ยวชาญ</p></section>
+<section class="panel"><h2>ผลการวิเคราะห์</h2><div id="result" class="result">กรอกข้อมูลแล้วกด “วิเคราะห์และคำนวณ” ผลจะแสดงที่นี่</div><div id="sources" class="links"></div></section>
+<section class="panel full"><h2>ข้อกำหนดการใช้ AI</h2><p>AI จะช่วยอธิบายเหตุผลและตรวจหาข้อมูลที่ขาด โดยไม่ควรสร้างมาตราหรืออัตราภาษีเอง การเรียก AI ต้องตั้งค่า OPENAI_API_KEY บนเซิร์ฟเวอร์เท่านั้น ห้ามใส่ API key ในหน้าเว็บหรือ commit ลง GitHub</p><p class="small">กฎหมายหลัก: ท.ป.4/2528 และฉบับแก้ไขเพิ่มเติม ตรวจสอบฉบับที่มีผล ณ วันที่จ่ายทุกครั้ง</p></section>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+let last=null;
+function analyze(){
+ const k=$('kind').value, who=$('recipient').value, amount=Number($('amount').value), vat=Number($('vat').value||0), detail=$('detail').value, extra=$('extra').value;
+ if(!k||!who||!$('date').value||!$('amount').value||amount<=0){$('result').textContent='ข้อมูลยังไม่ครบ: กรุณาระบุประเภทธุรกรรม สถานะผู้รับ จำนวนเงิน และวันที่จ่ายก่อนวิเคราะห์';return}
+ if(who==='foreign'){$('result').textContent='ต้องส่งผู้เชี่ยวชาญตรวจสอบ: ผู้รับเงินต่างประเทศอาจเกี่ยวข้องกับมาตรา 70 อนุสัญญาภาษีซ้อน และ ภ.พ.36 ระบบนี้ไม่คำนวณอัตราอัตโนมัติ';return}
+ let rate=null, form='ต้องตรวจสอบ', decision='ต้องหัก', why='', caution='';
+ const map={
+ rent:{rate:.05,form:who==='person'?'ภ.ง.ด.3':'ภ.ง.ด.53',why:'ค่าเช่าอสังหาริมทรัพย์ โดยทั่วไปหัก 5% ตามหลักเกณฑ์ที่เกี่ยวข้อง',caution:'ตรวจว่าเป็นค่าเช่าอสังหาริมทรัพย์จริงและผู้รับเป็นผู้มีถิ่นที่อยู่ในไทย'},
+ service:{rate:.03,form:who==='person'?'ภ.ง.ด.3':'ภ.ง.ด.53',why:'บริการทั่วไปที่ไม่เข้าข้อยกเว้น โดยทั่วไปหัก 3%',caution:'ตรวจเนื้อหาสัญญาและข้อยกเว้นเฉพาะ'},
+ contract:{rate:.03,form:who==='person'?'ภ.ง.ด.3':'ภ.ง.ด.53',why:'จ้างทำของโดยทั่วไปอาจเข้าหลักหัก 3%',caution:'ต้องตรวจลักษณะงาน วัสดุสำคัญและสัญญา หากจำแนกไม่ชัดให้ผู้เชี่ยวชาญตรวจ'},
+ ad:{rate:.02,form:who==='person'?'ภ.ง.ด.3':'ภ.ง.ด.53',why:'ค่าโฆษณาโดยทั่วไปหัก 2%',caution:'ตรวจว่าเป็นการเผยแพร่โฆษณาจริง ไม่ใช่บริการอื่น'},
+ transport:{rate:.01,form:who==='person'?'ภ.ง.ด.3':'ภ.ง.ด.53',why:'ค่าขนส่งสินค้าโดยผู้ประกอบกิจการขนส่งเป็นปกติ โดยทั่วไปหัก 1%',caution:'แยกจากค่าโดยสารขนส่งสาธารณะและค่าจัดส่งที่เป็นส่วนของการขายสินค้า'},
+ goods:{rate:0,form:'ไม่ใช้',decision:'ไม่ต้องหัก',why:'การขายสินค้าพร้อมจัดส่งโดยผู้ขายที่ไม่ได้ประกอบธุรกิจขนส่งเป็นปกติ โดยทั่วไปถือเป็นการขายสินค้า',caution:'หากเป็นสัญญาขนส่งแยกหรือผู้ขายทำธุรกิจขนส่งเป็นปกติ ต้องวิเคราะห์ใหม่'},
+ hotel:{rate:0,form:'ไม่ใช้',decision:'ไม่ต้องหัก',why:'ค่าบริการโรงแรมเข้าข้อยกเว้นตามหลักเกณฑ์ที่เกี่ยวข้อง',caution:'ต้องเป็นค่าห้องพัก/บริการโรงแรมจริง แยกรายการบริการอื่น'},
+ restaurant:{rate:0,form:'ไม่ใช้',decision:'ไม่ต้องหัก',why:'ค่าบริการภัตตาคารเข้าข้อยกเว้นตามหลักเกณฑ์ที่เกี่ยวข้อง',caution:'ตรวจว่าเป็นกิจการภัตตาคารตามนิยามและเป็นค่าอาหารจริง'}
+ };
+ if(k==='unknown'){
+  $('result').textContent='ยังสรุปไม่ได้ — ต้องถามข้อมูลก่อน\\n1) ค่าดำเนินการเป็นค่าตอบแทนจากงานอะไร มีสัญญาหรือเอกสารใด?\\n2) ผู้รับเป็นบุคคลธรรมดาหรือนิติบุคคล และมีถิ่นที่อยู่ประเทศใด?\\n3) ยอดเงินรวม VAT หรือไม่ และมีใบกำกับภาษีหรือไม่?\\n4) จ่ายครั้งเดียวหรือจ่ายเป็นงวด และจ่ายวันที่ใด?\\n5) ผู้จ่ายเป็นบริษัท/หน่วยงานประเภทใด?';return;
+ }
+ const x=map[k]; decision=x.decision||'ต้องหัก'; rate=x.rate; why=x.why;caution=x.caution;
+ const tax=amount*rate, net=amount+vat-tax;
+ last={kind:k,recipient:who,amount,vat,date:$('date').value,detail,extra,rate,form,tax,net,decision,why,caution};
+ $('result').textContent=`${decision}\\n\\nเหตุผล: ${why}\\nอัตรา: ${(rate*100).toFixed(2)}%\\nฐานภาษี: ${rate>0?amount.toLocaleString('th-TH',{minimumFractionDigits:2})+' บาท (ก่อน VAT)':'ไม่ใช้'}\\nภาษีหัก ณ ที่จ่าย: ${tax.toLocaleString('th-TH',{minimumFractionDigits:2})} บาท\\nVAT: ${vat.toLocaleString('th-TH',{minimumFractionDigits:2})} บาท\\nยอดจ่ายสุทธิ: ${net.toLocaleString('th-TH',{minimumFractionDigits:2})} บาท\\nแบบนำส่ง: ${form}\\nข้อควรระวัง: ${caution}\\n\\nคำเตือน: ตรวจสอบกฎหมายฉบับปัจจุบันและเอกสารจริงก่อนนำไปใช้`;
+ $('sources').innerHTML='<b>แหล่งกฎหมายทางการ</b><a target="_blank" href="https://www.rd.go.th/3479.html">ท.ป.4/2528 กรมสรรพากร</a><a target="_blank" href="https://www.rd.go.th/2693.html">ท.ป.101/2544 เพิ่มข้อ 12/1 (ข้อยกเว้นโรงแรม/ภัตตาคาร)</a><a target="_blank" href="https://www.rd.go.th/3326.html">คำชี้แจงกรมสรรพากร: ซื้อสินค้าพร้อมจัดส่ง</a>';
+}
+async function askAI(){
+ if(!last){analyze();if(!last)return}
+ $('result').textContent+='\\n\\nกำลังส่งข้อมูลให้ AI...';
+ try{
+ const res=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({transaction:last})});
+ const data=await res.json();if(!res.ok)throw new Error(data.error||'AI service unavailable');
+ $('result').textContent+='\\n\\nคำอธิบายจาก AI:\\n'+data.answer;
+ }catch(e){$('result').textContent+='\\n\\nยังเชื่อมต่อ AI ไม่สำเร็จ: '+e.message+'\\nตรวจว่าเปิดผ่าน server และตั้งค่า OPENAI_API_KEY แล้ว';}
+}
+</script></body></html>
